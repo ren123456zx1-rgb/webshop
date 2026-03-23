@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Particle Effects Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* พื้นหลังสำหรับ Bubbles */
+        body.bubbles-theme {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* พื้นหลังสำหรับ Snow */
+        body.snow-theme {
+            background: linear-gradient(to bottom, #2c3e50 0%, #34495e 50%, #95a5a6 100%);
+        }
+        
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn-bubbles {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-snow {
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            color: #2c3e50;
+        }
+        
+        .btn-none {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .card li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 80px;
+            padding: 20px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bubbles-theme">
+    
+    <!-- Particle Container (จะถูกโหลดแบบ dynamic) -->
+    <div id="particle-container"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Particle Effects Demo</h1>
+            <p>เลือกเอฟเฟกต์พาร์ติเคิลที่คุณชอบ</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-bubbles" onclick="loadParticle('bubbles')">
+                🫧 Floating Bubbles
+            </button>
+            <button class="btn btn-snow" onclick="loadParticle('snow')">
+                ❄️ Snowfall
+            </button>
+            <button class="btn btn-none" onclick="loadParticle('none')">
+                🚫 ปิดเอฟเฟกต์
+            </button>
+        </div>
+        
+        <div class="info-cards">
+            <div class="card">
+                <h3>🫧 Floating Bubbles</h3>
+                <ul>
+                    <li>ฟองอากาศ 3D สมจริง</li>
+                    <li>ระบบลมแบบสุ่ม</li>
+                    <li>แสงสะท้อนสวยงาม</li>
+                    <li>เหมาะกับธีมสีฟ้า</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>❄️ Snowfall</h3>
+                <ul>
+                    <li>เกล็ดหิมะ 7 รูปแบบ</li>
+                    <li>ระบบลมกระโชก</li>
+                    <li>หมุนและแกว่งสมจริง</li>
+                    <li>เหมาะกับธีมฤดูหนาว</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>💡 <strong>Tips:</strong> ลองเปลี่ยนเอฟเฟกต์ดูสิ! แต่ละแบบมีระบบลมและฟิสิกส์ที่แตกต่างกัน</p>
+        </div>
+    </div>
+    
+    <script>
+        let currentParticle = 'bubbles';
+        
+        function loadParticle(type) {
+            const container = document.getElementById('particle-container');
+            const body = document.body;
+            
+            // ลบ particle เก่า
+            container.innerHTML = '';
+            
+            // เปลี่ยนธีม
+            body.className = '';
+            
+            if (type === 'bubbles') {
+                body.classList.add('bubbles-theme');
+                loadBubblesEffect();
+            } else if (type === 'snow') {
+                body.classList.add('snow-theme');
+                loadSnowEffect();
+            }
+            
+            currentParticle = type;
+        }
+        
+        function loadBubblesEffect() {
+            const container = document.getElementById('particle-container');
+            container.id = 'bubbles-container';
+            
+            // โหลด CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                #bubbles-container {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 1;
+                    overflow: hidden;
+                }
+
+                .bubble {
+                    position: absolute;
+                    bottom: -100px;
+                    border-radius: 50%;
+                    background: radial-gradient(circle at 30% 30%, 
+                        rgba(255, 255, 255, 0.8), 
+                        rgba(173, 216, 230, 0.4) 40%, 
+                        rgba(135, 206, 250, 0.2) 70%,
+                        rgba(100, 149, 237, 0.1));
+                    box-shadow: 
+                        inset 0 10px 20px rgba(255, 255, 255, 0.5),
+                        inset 0 -10px 20px rgba(100, 149, 237, 0.3),
+                        0 5px 15px rgba(100, 149, 237, 0.4);
+                    animation: float-up linear infinite;
+                    pointer-events: none;
+                    filter: blur(0.5px);
+                }
+
+                .bubble::before {
+                    content: '';
+                    position: absolute;
+                    top: 10%;
+                    left: 15%;
+                    width: 40%;
+                    height: 40%;
+                    background: radial-gradient(circle, 
+                        rgba(255, 255, 255, 0.9) 0%, 
+                        rgba(255, 255, 255, 0.3) 50%, 
+                        transparent 70%);
+                    border-radius: 50%;
+                    filter: blur(2px);
+                }
+
+                .bubble::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 15%;
+                    right: 20%;
+                    width: 25%;
+                    height: 25%;
+                    background: radial-gradient(circle, 
+                        rgba(255, 255, 255, 0.6) 0%, 
+                        transparent 60%);
+                    border-radius: 50%;
+                    filter: blur(3px);
+                }
+
+                @keyframes float-up {
+                    0% {
+                        transform: translateY(0) translateX(0) scale(1);
+                        opacity: 0;
+                    }
+                    10% {
+                        opacity: 0.8;
+                    }
+                    90% {
+                        opacity: 0.8;
+                    }
+                    100% {
+                        transform: translateY(calc(-100vh - 200px)) translateX(var(--drift)) scale(0.8);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // สร้างฟอง
+            const bubbleCount = 25;
+            
+            function createBubble() {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                const size = Math.random() * 60 + 30;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                
+                const duration = Math.random() * 8 + 12;
+                bubble.style.animationDuration = duration + 's';
+                
+                const drift = (Math.random() - 0.5) * 200;
+                bubble.style.setProperty('--drift', drift + 'px');
+                
+                bubble.style.opacity = Math.random() * 0.4 + 0.4;
+                bubble.style.animationDelay = Math.random() * 5 + 's';
+                
+                container.appendChild(bubble);
+                
+                setTimeout(() => {
+                    if (bubble.parentNode) bubble.remove();
+                }, (duration + 5) * 1000);
+            }
+            
+            for (let i = 0; i < bubbleCount; i++) {
+                setTimeout(() => createBubble(), i * 300);
+            }
+            
+            setInterval(() => {
+                if (container.children.length < bubbleCount + 10) {
+                    createBubble();
+                }
+            }, 1500);
+        }
+        
+        function loadSnowEffect() {
+            const container = document.getElementById('particle-container');
+            container.id = 'snow-container';
+            
+            // โหลด CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                #snow-container {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 1;
+                    overflow: hidden;
+                }
+
+                .snowflake {
+                    position: absolute;
+                    top: -10px;
+                    color: #fff;
+                    font-size: 1em;
+                    pointer-events: none;
+                    animation: fall linear infinite;
+                    text-shadow: 
+                        0 0 5px rgba(255, 255, 255, 0.8),
+                        0 0 10px rgba(200, 230, 255, 0.6),
+                        0 0 15px rgba(150, 200, 255, 0.4);
+                    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
+                }
+
+                .snowflake.type-1::before { content: '❄'; }
+                .snowflake.type-2::before { content: '❅'; }
+                .snowflake.type-3::before { content: '❆'; }
+                .snowflake.type-4::before { content: '✻'; }
+                .snowflake.type-5::before { content: '✼'; }
+                .snowflake.type-6::before { content: '❉'; }
+                .snowflake.type-7::before { content: '✺'; }
+
+                .snowflake.spinning {
+                    animation: fall linear infinite, spin linear infinite;
+                }
+
+                .snowflake.swaying {
+                    animation: fall linear infinite, sway ease-in-out infinite;
+                }
+
+                .snowflake.blurred {
+                    filter: blur(2px);
+                    opacity: 0.6;
+                }
+
+                @keyframes fall {
+                    0% {
+                        transform: translateY(0) translateX(0);
+                        opacity: 0;
+                    }
+                    10% {
+                        opacity: 1;
+                    }
+                    90% {
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(100vh) translateX(var(--drift));
+                        opacity: 0;
+                    }
+                }
+
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+
+                @keyframes sway {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(var(--sway-left)); }
+                    75% { transform: translateX(var(--sway-right)); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // สร้างหิมะ
+            const snowflakeCount = 50;
+            let windSpeed = 0;
+            
+            function updateWind() {
+                const targetWind = (Math.random() - 0.5) * 100;
+                windSpeed += (targetWind - windSpeed) * 0.1;
+                requestAnimationFrame(updateWind);
+            }
+            updateWind();
+            
+            function createSnowflake() {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                
+                const type = Math.floor(Math.random() * 7) + 1;
+                snowflake.classList.add('type-' + type);
+                
+                const size = Math.random() * 1.5 + 0.5;
+                snowflake.style.fontSize = size + 'em';
+                snowflake.style.left = Math.random() * 100 + '%';
+                
+                const fallSpeed = (size * 5) + Math.random() * 10 + 10;
+                snowflake.style.animationDuration = fallSpeed + 's';
+                
+                const drift = (Math.random() - 0.5) * 300 + windSpeed;
+                snowflake.style.setProperty('--drift', drift + 'px');
+                
+                const effect = Math.random();
+                if (effect < 0.3) {
+                    snowflake.classList.add('spinning');
+                    const spinSpeed = Math.random() * 5 + 3;
+                    snowflake.style.animationDuration = fallSpeed + 's, ' + spinSpeed + 's';
+                } else if (effect < 0.6) {
+                    snowflake.classList.add('swaying');
+                    const swayLeft = -(Math.random() * 50 + 20);
+                    const swayRight = Math.random() * 50 + 20;
+                    snowflake.style.setProperty('--sway-left', swayLeft + 'px');
+                    snowflake.style.setProperty('--sway-right', swayRight + 'px');
+                    const swaySpeed = Math.random() * 3 + 2;
+                    snowflake.style.animationDuration = fallSpeed + 's, ' + swaySpeed + 's';
+                }
+                
+                if (Math.random() < 0.3) {
+                    snowflake.classList.add('blurred');
+                }
+                
+                snowflake.style.opacity = Math.random() * 0.6 + 0.4;
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
+                
+                container.appendChild(snowflake);
+                
+                setTimeout(() => {
+                    if (snowflake.parentNode) snowflake.remove();
+                }, (fallSpeed + 5) * 1000);
+            }
+            
+            for (let i = 0; i < snowflakeCount; i++) {
+                setTimeout(() => createSnowflake(), i * 200);
+            }
+            
+            setInterval(() => {
+                if (container.children.length < snowflakeCount + 20) {
+                    createSnowflake();
+                }
+            }, 800);
+        }
+        
+        // โหลด Bubbles เป็นค่าเริ่มต้น
+        loadBubblesEffect();
+    </script>
+</body>
+</html>
